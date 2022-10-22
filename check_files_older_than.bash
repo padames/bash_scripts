@@ -16,7 +16,7 @@ else
     # find . -type f -mmin "$FILE_FREQUENCY_MINUTES" -and -name "*colour*mp4"  -printf "%m\t%s bytes\t%t\t%u\t%g\t%p\n"
     # find . -type f -newermt "-$FILE_FREQUENCY_SECONDS seconds" -and -name "*colour*mp4"  -printf "%m\t%s bytes\t%t\t%u\t%g\t%p\n"
     # find . -type f -newermt "-$((FILE_FREQUENCY_SECONDS - 20)) seconds" -and -name "*Thermal*mp4"  -printf "%m\t%s bytes\t%t\t%u\t%g\t%p\n"
-    find . -type f -newermt "-$((FILE_FREQUENCY_SECONDS)) seconds" -and -name "*Thermal*mp4"  -printf "%m\t%s bytes\t%t\t%u\t%g\t%p\n"
+    find . -type f -newermt "-$((FILE_FREQUENCY_SECONDS)) seconds" -and -name "*TrendNet Thermal*mp4"  -printf "%m\t%s bytes\t%t\t%u\t%g\t%p\n"
     
     
 
