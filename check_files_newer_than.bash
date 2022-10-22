@@ -18,19 +18,15 @@ else
     # find . -type f -newermt "-$((FILE_FREQUENCY_SECONDS - 20)) seconds" -and -name "*Thermal*mp4"  -printf "%m\t%s bytes\t%t\t%u\t%g\t%p\n"
     fns=$(find . -type f -newermt "-$((FILE_FREQUENCY_SECONDS)) seconds" -and -name "*TrendNet Thermal*mp4"  -printf "%m\t%s bytes\t%t\t%u\t%g\t%p\n")
     
-    echo "$fns"
-
-    for i in ${fns[*]}; do
-        echo $i
-    done
-    
+    if [ "$(cut -d$'\n' -f1 <<<"$fns" | wc -l)" == 0 ]; then
+        #files are not being archived at the expected time interval
+        sudo systemctl stop tickler-intelliview.service
+    fi
 
 
-
-    # echo $(date +%s)
-    # f_=$(find . -type f -newermt "-10 seconds" -and -name "* *Thermal*mp4")
-    # echo "$f_"
-    # stat -L --format %Y "$f_"
-    # find . -type f -newermt "-10 seconds" -and -name "*Thermal* *mp4"  -printf "%m\t%s bytes\t%t\t%u\t%g\t%p\n"
-    
+    # for i in "${fns[*]}"; do
+    # for i in $fns; do
+    #      echo $i
+    # done
+        
 fi

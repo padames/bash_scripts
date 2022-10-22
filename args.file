@@ -1,0 +1,2 @@
+CopyFrom=jobfiles/development
+CopyTo=/software/apps/rel/xyz/spawn/jobs
