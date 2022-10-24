@@ -1,13 +1,17 @@
 #!/bin/bash
 
-# Purpose: 
+# Purpose: stop the tickler if archived videos from the thermal camera
+#          stop being saved to file
 
 
 
 # Script constants:
 declare -r SERVICE_FILENAME="tickler-intelliview.service"
+declare -r ARCHIVED_VIDEO_SYSTEM_PATH="/opt/ivt/photography/ArchiveVideo"
+
 # Script variables:
 declare FILENAME=""
+
 
 function is_active () {
 
@@ -100,23 +104,29 @@ function find_latest_file () {
 }
 
 
-FILENAME= find_latest_file
 
-NOW_SECONDS=$(date +'%s')
-# LAST_FILE_SECONDS=$(stat --format=%Y "$FILENAME") # last modification seconds from epoch
-LAST_FILE_SECONDS=$(stat --format=%X "$FILENAME") # last access seconds from epoch
-DIFF=$((NOW_SECONDS - LAST_FILE_SECONDS))
 
-# echo "Now in seconds from epoch = $NOW_SECONDS"
-# echo "File seconds since last modified = $LAST_FILE_SECONDS"
+function main () {
+    find_latest_file
 
-echo "Latest video file was modified $DIFF seconds ago"
+    NOW_SECONDS=$(date +'%s')
+    # LAST_FILE_SECONDS=$(stat --format=%Y "$FILENAME") # last modification seconds from epoch
+    LAST_FILE_SECONDS=$(stat --format=%X "$FILENAME") # last access seconds from epoch
+    DIFF=$((NOW_SECONDS - LAST_FILE_SECONDS))
 
-declare -i THRESHOLD_IN_SECONDS=30
+    # echo "Now in seconds from epoch = $NOW_SECONDS"
+    # echo "File seconds since last modified = $LAST_FILE_SECONDS"
 
-if (( DIFF > THRESHOLD_IN_SECONDS ))
-then
-    echo "I should power cycle this unit"
-else
-    echo "Boson camera is well"
-fi
+    echo "Latest video file was modified $DIFF seconds ago"
+
+    declare -i THRESHOLD_IN_SECONDS=30
+
+    if (( DIFF > THRESHOLD_IN_SECONDS ))
+    then
+        echo "I should power cycle this unit"
+    else
+        echo "Boson camera is well"
+    fi
+}
+
+main
