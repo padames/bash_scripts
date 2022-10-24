@@ -121,10 +121,26 @@ function find_latest_file () {
 }
 
 
+function change_into_todays_folder {
+    TODAYS_FOLDER=$(date +'%Y%m%d')
+    PATH_TO_CHECK=$ARCHIVED_VIDEO_SYSTEM_PATH/$TODAYS_FOLDER
+    echo "$PATH_TO_CHECK"
+    if [[ ! -d $PATH_TO_CHECK ]]; then
+        sudo mkdir "$PATH_TO_CHECK"
+    fi
+    sudo sh -c cd "$PATH_TO_CHECK" && return 0
 
+    return 1
+}
+
+function is_there_a_current_video_file {
+    return 0
+}
 
 function main () {
     local SHOULD_REBOOT=1 # no reboot (false)
+
+    change_into_todays_folder
 
     if ! find_latest_file
     then
