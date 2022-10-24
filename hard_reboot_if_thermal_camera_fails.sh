@@ -74,6 +74,10 @@ function start_tickler () {
         then
             return 0 # success
         else
+            MSG="Could not start the tickler, please check systemct status tickler-intelliview"
+            THIS_PROG_NAME=$(basename "${BASH_SOURCE[*]}")
+            printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+            SHOULD_REBOOT=0 # reboot (true)
             return 1 # failure
         fi
     fi
@@ -87,6 +91,10 @@ function stop_tickler () {
 
         if is_active
         then
+            MSG="Could not stop the tickler, please check systemct status tickler-intelliview"
+            THIS_PROG_NAME=$(basename "${BASH_SOURCE[*]}")
+            printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+            SHOULD_REBOOT=0 # reboot (true)
             return 1 # failure
         else
             return 0 # success
@@ -101,32 +109,59 @@ function find_latest_file () {
     FILENAME=$(find . -maxdepth 1 -name "*TrendNet Thermal*mp4" | sort -g | tail -n 1)
     # echo "LATEST_FILE=$FILENAME" > latest_archived_filename
     # echo "$FILENAME"
-    return 0
+    if [[ $FILENAME == "" ]]
+    then 
+        MSG="Could not find any video files."
+        THIS_PROG_NAME=$(basename "${BASH_SOURCE[*]}")
+        printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+        return 1
+    else
+        return 0
+    fi
 }
 
 
 
 
 function main () {
-    find_latest_file
+    local SHOULD_REBOOT=1 # no reboot (false)
 
-    NOW_SECONDS=$(date +'%s')
-    # LAST_FILE_SECONDS=$(stat --format=%Y "$FILENAME") # last modification seconds from epoch
-    LAST_FILE_SECONDS=$(stat --format=%X "$FILENAME") # last access seconds from epoch
-    DIFF=$((NOW_SECONDS - LAST_FILE_SECONDS))
-
-    # echo "Now in seconds from epoch = $NOW_SECONDS"
-    # echo "File seconds since last modified = $LAST_FILE_SECONDS"
-
-    echo "Latest video file was modified $DIFF seconds ago"
-
-    declare -i THRESHOLD_IN_SECONDS=30
-
-    if (( DIFF > THRESHOLD_IN_SECONDS ))
+    if ! find_latest_file
     then
-        echo "I should power cycle this unit"
+        MSG="Performing a hard reboot."
+        THIS_PROG_NAME=$(basename "${BASH_SOURCE[@]}")
+        printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+     
+        SHOULD_REBOOT=0 # reboot (true)
     else
-        echo "Boson camera is well"
+
+        NOW_SECONDS=$(date +'%s')
+        # LAST_FILE_SECONDS=$(stat --format=%Y "$FILENAME") # last modification seconds from epoch
+        LAST_FILE_SECONDS=$(stat --format=%X "$FILENAME") # last access seconds from epoch
+        DIFF=$((NOW_SECONDS - LAST_FILE_SECONDS))
+
+        # echo "Now in seconds from epoch = $NOW_SECONDS"
+        # echo "File seconds since last modified = $LAST_FILE_SECONDS"
+
+        echo "Latest video file was modified $DIFF seconds ago"
+
+        declare -i THRESHOLD_IN_SECONDS=30
+
+        if (( DIFF > THRESHOLD_IN_SECONDS ))
+        then
+            echo "I should power cycle this unit"
+            SHOULD_REBOOT=0
+        else
+            echo "Boson camera is well"
+            SHOULD_REBOOT=1
+        fi
+    fi
+
+    if (( SHOULD_REBOOT == 0 ))
+    then
+        stop_tickler
+    else
+        start_tickler
     fi
 }
 
