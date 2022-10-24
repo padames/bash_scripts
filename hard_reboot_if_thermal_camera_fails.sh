@@ -76,7 +76,7 @@ function start_tickler () {
         else
             MSG="Could not start the tickler, please check systemct status tickler-intelliview"
             THIS_PROG_NAME=$(basename "${BASH_SOURCE[*]}")
-            printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+            printf "%s\n" "${FUNCNAME[0]}, Line ${BASH_LINENO[0]}: ${MSG}"
             SHOULD_REBOOT=0 # reboot (true)
             return 1 # failure
         fi
@@ -112,8 +112,8 @@ function find_latest_file () {
     if [[ $FILENAME == "" ]]
     then 
         MSG="Could not find any video files."
-        THIS_PROG_NAME=$(basename "${BASH_SOURCE[*]}")
-        printf "%s\n" "$THIS_PROG_NAME, ${FUNCNAME[*]}, Line ${BASH_LINENO[*]}: ${MSG}"
+        THIS_PROG_NAME=$(basename "${BASH_SOURCE[0]}")
+        printf "%s\n" "${FUNCNAME[0]}, Line ${BASH_LINENO[0]}: ${MSG}"
         return 1
     else
         return 0
@@ -124,16 +124,18 @@ function find_latest_file () {
 function change_into_todays_folder {
     TODAYS_FOLDER=$(date +'%Y%m%d')
     PATH_TO_CHECK="$ARCHIVED_VIDEO_SYSTEM_PATH"/"$TODAYS_FOLDER"/local
-    echo "$PATH_TO_CHECK"
+    
     if [[ ! -d $PATH_TO_CHECK ]]; then
         sudo mkdir "$PATH_TO_CHECK"
     fi
 
-    sudo sh -c cd "$PATH_TO_CHECK" && return 0
+    # if
+    cd "$PATH_TO_CHECK" && return 0
 
+    # else
     MSG="Could not move into $PATH_TO_CHECK."
-    THIS_PROG_NAME=$(basename "${BASH_SOURCE[@]}")
-    printf "%s\n" "$THIS_PROG_NAME, ${FUNCNAME[*]}, Line ${BASH_LINENO[*]}: ${MSG}"
+    THIS_PROG_NAME=$(basename "${BASH_SOURCE[0]}")
+    printf "%s\n" "${FUNCNAME[0]},  Line ${BASH_LINENO[0]}: ${MSG}"
     return 1
 }
 
@@ -151,7 +153,7 @@ function main () {
     then
         MSG="Performing a hard reboot."
         THIS_PROG_NAME=$(basename "${BASH_SOURCE[@]}")
-        printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+        printf "%s\n" "$THIS_PROG_NAME, ${FUNCNAME[0]}, Line ${BASH_LINENO[0]}: ${MSG}"
      
         SHOULD_REBOOT=0 # reboot (true)
     else

@@ -9,6 +9,8 @@
 ### Note: use "${BASH_SOURCE[@]}:  ${BASH_LINENO[@]} ${XYZ}" to log out errors from the script
 ###        being debugged
 
+PS4='+[$0:$LINENO] '
+
 if [[ -v TRACE ]]; then
   echo "Run TRACE mode"
   set -o xtrace # same as set -x
