@@ -1,12 +1,12 @@
 #!/bin/bash
 
-TIME=`date +%H:%M`
+TIME=$(date +%H:%M)
 HOUR="$TIME"
-echo $HOUR
+echo "$HOUR"
 while [ 1 ]; do
-    HOUR=`date +%H:%M`
+    HOUR=$(date +%H:%M)
     if [ "$TIME" != "$HOUR" ]; then
-	    echo $HOUR
+	    echo "$HOUR"
 	    TIME="$HOUR"
     fi
     sleep 10	

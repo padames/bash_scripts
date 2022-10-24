@@ -4,8 +4,8 @@
 # Date: March 14, 2021
 # Modified: march 14, 2021
 
-echo "running process #$$", called `basename $0`
-echo "with arguments: $@"
+echo "running process #$$", called "$(basename "$0")"
+echo "with arguments: $*"
 HOUSE=house
 BOTTLES=bottles
 CARS=cars
