@@ -1,6 +1,9 @@
 #!/bin/bash
 
 t_stamp=$(date +'%Y%m%d')
-echo $t_stamp
 
-mkdir "$t_stamp"
+if [[ ! -d $t_stamp ]]
+then
+    echo "Created folder $t_stamp"
+    mkdir "$t_stamp"
+fi
