@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Purpose: stop the tickler if archived videos from the thermal camera
 #          stop being saved to file
 

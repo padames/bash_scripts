@@ -1,0 +1,27 @@
+### Define Debug environment
+### Filename: my-debug-env
+
+### Usage: $ TRACE=1 BASH_ENV=my-debug-env ./script-to-debug.sh
+
+
+###  source: https://www.shell-tips.com/bash/debug-script/#gsc.tab=0
+
+### Note: use "${BASH_SOURCE[@]}:  ${BASH_LINENO[@]} ${XYZ}" to log out errors from the script
+###        being debugged
+
+if [[ -v TRACE ]]; then
+  echo "Run TRACE mode"
+  set -o xtrace # same as set -x
+fi
+if [[ -v NOOP ]]; then
+  echo "Run NOOP mode"
+  set -o noexec # same as set -n
+fi
+trap 'echo "$BASH_COMMAND" failed with error code $?' ERR
+
+if [[ -v DEBUGGER ]]; then
+  shopt -s extdebug
+else
+  set -o errtrace
+  set -o functrace
+fi
