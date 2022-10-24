@@ -3,7 +3,7 @@
 cd_from_main () {
 	echo "in $0 before cd: $(pwd)"
 
-        cd /tmp || exit
+        cd /tmp
 
 	echo "in $0 after cd: $(pwd)"
 }       
