@@ -120,9 +120,9 @@ function find_latest_file () {
     fi
 }
 
-
+# A new folder gets created according to UTM time
 function change_into_todays_folder {
-    TODAYS_FOLDER=$(date +'%Y%m%d')
+    TODAYS_FOLDER=$(date -u +'%Y%m%d')
     PATH_TO_CHECK="$ARCHIVED_VIDEO_SYSTEM_PATH"/"$TODAYS_FOLDER"/local
     
     if [[ ! -d $PATH_TO_CHECK ]]; then
