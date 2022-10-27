@@ -1,1 +1,1 @@
-*/1 * * * * /bin/bash /opt/ivt/services/dcamServices/camera_loss_response.sh 70 > /tmp/camera_loss_reponse_log.txt
+*/1 * * * * /bin/bash /opt/ivt/services/dcamServices/camera_loss_response.sh 70 > /tmp/camera_loss_reponse_log.txt 2>&1
