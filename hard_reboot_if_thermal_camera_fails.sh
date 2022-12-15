@@ -74,7 +74,7 @@ function start_tickler () {
         then
             return 0 # success
         else
-            MSG="Could not start the tickler, please check systemct status tickler-intelliview"
+            MSG="Could not start the tickler, please check systemctl status tickler-intelliview"
             THIS_PROG_NAME=$(basename "${BASH_SOURCE[*]}")
             printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
             SHOULD_REBOOT=0 # reboot (true)
@@ -91,7 +91,7 @@ function stop_tickler () {
 
         if is_active
         then
-            MSG="Could not stop the tickler, please check systemct status tickler-intelliview"
+            MSG="Could not stop the tickler, please check systemctl status tickler-intelliview"
             THIS_PROG_NAME=$(basename "${BASH_SOURCE[*]}")
             printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
             SHOULD_REBOOT=0 # reboot (true)
@@ -122,25 +122,35 @@ function find_latest_file () {
 
 
 function change_into_todays_folder {
+
+    # create folder with todays date
     TODAYS_FOLDER=$(date +'%Y%m%d')
     PATH_TO_CHECK=$ARCHIVED_VIDEO_SYSTEM_PATH/$TODAYS_FOLDER
-    echo "$PATH_TO_CHECK"
+    
+    # echo "$PATH_TO_CHECK"
+    
     if [[ ! -d $PATH_TO_CHECK ]]; then
         sudo mkdir "$PATH_TO_CHECK"
     fi
     sudo sh -c cd "$PATH_TO_CHECK" && return 0
 
+    MSG="Could not open."
+    THIS_PROG_NAME=$(basename "${BASH_SOURCE[@]}")
+    printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+
     return 1
 }
 
-function is_there_a_current_video_file {
-    return 0
-}
 
 function main () {
     local SHOULD_REBOOT=1 # no reboot (false)
 
-    change_into_todays_folder
+    if ! change_into_todays_folder; then
+        MSG="Can't check camera status, quitting now."
+        THIS_PROG_NAME=$(basename "${BASH_SOURCE[@]}")
+        printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+        return 1
+    fi         
 
     if ! find_latest_file
     then

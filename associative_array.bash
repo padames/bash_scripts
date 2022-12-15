@@ -16,11 +16,15 @@ labels[2]=$BOTTLES
 declare -A a
 a=([${labels[0]}]=770 [${labels[1]}]=5 [${labels[2]}]=0.004)
 counter=0
-for i in ${a[*]}
+echo "---"
+for i in "${a[@]}"
 do
-	echo ${labels[$counter]}: $i
-	counter=($counter+1)
+	echo "${labels[$counter]}": "$i"
+	echo "${labels[$counter]}": "${a[${labels[$counter]}]}"
+	echo "---"
+	counter=("$counter"+1)
 done
 
 # use key to reference array value
-echo ${a[bottles]}
+echo $BOTTLES " :" "${a[$BOTTLES]}"
+echo $BOTTLES " :" "${a[bottles]}"
