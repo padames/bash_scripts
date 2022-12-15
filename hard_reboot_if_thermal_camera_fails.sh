@@ -24,12 +24,12 @@ function is_active () {
 
     if [[ -z $REENTRANT ]] # only do if REENTRANT is the empty string
     then
-        sudo systemctl daemon-reload
+         systemctl daemon-reload
     fi
 
     case $STATUS in
     active)
-        [[ -n $REENTRANT ]] && sudo systemctl daemon-reload # reload if just became active after being in activating state
+        [[ -n $REENTRANT ]] &&  systemctl daemon-reload # reload if just became active after being in activating state
         return 0 # success
         ;;
     activating)
@@ -53,12 +53,12 @@ function is_active () {
 
 function start_it () {
     # systemd runs the ExecStart in the unit file for this service
-    sudo systemctl start $SERVICE_FILENAME
+     systemctl start $SERVICE_FILENAME
 }
 
 function stop_it () {
     # enabled services are started by systemd on reboot
-    sudo systemctl stop $SERVICE_FILENAME
+     systemctl stop $SERVICE_FILENAME
 }
 
 
@@ -76,7 +76,7 @@ function start_tickler () {
         else
             MSG="Could not start the tickler, please check systemctl status tickler-intelliview"
             THIS_PROG_NAME=$(basename "${BASH_SOURCE[*]}")
-            printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+            printf "%s\n" "${FUNCNAME[0]}, Line ${BASH_LINENO[0]}: ${MSG}"
             SHOULD_REBOOT=0 # reboot (true)
             return 1 # failure
         fi
@@ -105,39 +105,44 @@ function stop_tickler () {
 }
 
 function find_latest_file () {
-    unset FILENAME
+    # unset $FILENAME
+    pwd
+    # this was needed in dev1, an intel based dcam
     FILENAME=$(find . -maxdepth 1 -name "*TrendNet Thermal*mp4" | sort -g | tail -n 1)
-    # echo "LATEST_FILE=$FILENAME" > latest_archived_filename
-    # echo "$FILENAME"
+
     if [[ $FILENAME == "" ]]
-    then 
-        MSG="Could not find any video files."
-        THIS_PROG_NAME=$(basename "${BASH_SOURCE[*]}")
-        printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
-        return 1
+    then
+        # this was found to work in tx2-4 
+        FILENAME=$(find . -maxdepth 1 -name "*Thermal*mp4" | sort -g | tail -n 1)
+        if [[ $FILENAME == "" ]]; then 
+            MSG="Could not find any video files."
+            THIS_PROG_NAME=$(basename "${BASH_SOURCE[0]}")
+            printf "%s\n" "${FUNCNAME[0]}, Line ${BASH_LINENO[0]}: ${MSG}"
+            return 1
+        else
+            return 0
+        fi
     else
         return 0
     fi
 }
 
-
+# A new folder gets created according to UTM time
 function change_into_todays_folder {
-
-    # create folder with todays date
-    TODAYS_FOLDER=$(date +'%Y%m%d')
-    PATH_TO_CHECK=$ARCHIVED_VIDEO_SYSTEM_PATH/$TODAYS_FOLDER
-    
-    # echo "$PATH_TO_CHECK"
+    TODAYS_FOLDER=$(date -u +'%Y%m%d')
+    PATH_TO_CHECK="$ARCHIVED_VIDEO_SYSTEM_PATH"/"$TODAYS_FOLDER"/local
     
     if [[ ! -d $PATH_TO_CHECK ]]; then
-        sudo mkdir "$PATH_TO_CHECK"
+         mkdir "$PATH_TO_CHECK"
     fi
-    sudo sh -c cd "$PATH_TO_CHECK" && return 0
 
-    MSG="Could not open."
-    THIS_PROG_NAME=$(basename "${BASH_SOURCE[@]}")
-    printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+    # if
+    cd "$PATH_TO_CHECK" && return 0
 
+    # else
+    MSG="Could not move into $PATH_TO_CHECK."
+    THIS_PROG_NAME=$(basename "${BASH_SOURCE[0]}")
+    printf "%s\n" "${FUNCNAME[0]},  Line ${BASH_LINENO[0]}: ${MSG}"
     return 1
 }
 
@@ -145,18 +150,14 @@ function change_into_todays_folder {
 function main () {
     local SHOULD_REBOOT=1 # no reboot (false)
 
-    if ! change_into_todays_folder; then
-        MSG="Can't check camera status, quitting now."
-        THIS_PROG_NAME=$(basename "${BASH_SOURCE[@]}")
-        printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
-        return 1
-    fi         
+    CUR_PATH=$(pwd -L)
+    change_into_todays_folder
 
     if ! find_latest_file
     then
         MSG="Performing a hard reboot."
         THIS_PROG_NAME=$(basename "${BASH_SOURCE[@]}")
-        printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"
+        printf "%s\n" "$THIS_PROG_NAME, ${FUNCNAME[0]}, Line ${BASH_LINENO[0]}: ${MSG}"
      
         SHOULD_REBOOT=0 # reboot (true)
     else
@@ -171,7 +172,7 @@ function main () {
 
         echo "Latest video file was modified $DIFF seconds ago"
 
-        declare -i THRESHOLD_IN_SECONDS=30
+        declare -i THRESHOLD_IN_SECONDS=70
 
         if (( DIFF > THRESHOLD_IN_SECONDS ))
         then
@@ -181,13 +182,17 @@ function main () {
             echo "Boson camera is well"
             SHOULD_REBOOT=1
         fi
+        if ! cd "$CUR_PATH"; then
+            MSG="Could not return to original path."
+            THIS_PROG_NAME=$(basename "${BASH_SOURCE[@]}")
+            printf "%s\n" "$THIS_PROG_NAME, Line ${BASH_LINENO[*]}: ${MSG}"            
+        fi
     fi
 
     if (( SHOULD_REBOOT == 0 ))
     then
-        stop_tickler
-    else
-        start_tickler
+        # stop_tickler
+        sudo -i shutdown -h now 
     fi
 }
 
