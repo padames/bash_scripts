@@ -11,7 +11,7 @@ declare -A DESCRIPTIONS
 declare -i FREE_MEMORY_KB
 declare -i INACTIVE_MEMORY_KB
 declare -i ACTIVE_MEMORY_KB
-declare -i TIME_STAMP
+
 
 DESCRIPTIONS=(
     [r]="The number of runnable processes. These are processes that have been launched and are either running or are waiting for their next time-sliced burst of CPU cycles"
@@ -49,11 +49,11 @@ while true ; do
 
     # getfilename outputs multiple files, linefeed separated
        
-    LINE=$(/usr/bin/vmstat -nwat -S m | grep :) # megabytes=1000^2, MB 
-    TIME_STAMP=$(echo "$LINE" | tr -s ' ' | cut -f19-20 -d' ' | tr ' ' '_' | tr ':' '-')
+    LINE=$(/usr/bin/vmstat -nwat -S m | grep : | tr -s ' ') # megabytes=1000^2, MB 
+    TIME_STAMP=$(echo "$LINE" | cut -f19-20 -d' ' | tr ' ' ',')
     echo "$TIME_STAMP"
-    DATA=$(echo "$LINE" | tr -s ' ' | cut -f1-17 -d' ' )
-    printf "[%s]:\t%s\n" $TIME_STAMP  "$DATA" >> ./"$DATAFILENAME"
+    DATA=$(echo "$LINE" | tr -s ' ' | cut -f1-17 -d' ' | tr ' ' ',')
+    printf "%s%s\n" "$TIME_STAMP"  "$DATA" >> "$DATAFILENAME"
     sleep 5
 done 
 
