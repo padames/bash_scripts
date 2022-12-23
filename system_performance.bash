@@ -57,4 +57,10 @@ while true ; do
     sleep 5
 done 
 
+# run:
+#  iostat -pxd -y 5 1 | grep sda2
+# to get disk IO stats every 5 seconds
+# https://www.xmodulo.com/how-to-monitor-disk-io-in-linux.html
+
+
 # iostat
