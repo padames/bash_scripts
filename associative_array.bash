@@ -19,7 +19,7 @@ counter=0
 echo "---"
 for i in "${a[@]}"
 do
-	echo "${labels[$counter]}": "$i"
+	echo "Iterating over a[@]: ": "$i"
 	echo "${labels[$counter]}": "${a[${labels[$counter]}]}"
 	echo "---"
 	counter=("$counter"+1)
