@@ -19,12 +19,14 @@ counter=0
 echo "---"
 for i in "${a[@]}"
 do
-	echo "Iterating over a[@]: ": "$i"
-	echo "${labels[$counter]}": "${a[${labels[$counter]}]}"
+	echo "Iterating over ${a[*]}: ": 
+	echo "iterator=$i"
+	echo "counter=$counter"
+	echo "a[${labels[$counter]}]": "${a[${labels[$counter]}]}"
 	echo "---"
 	counter=("$counter"+1)
 done
 
-# use key to reference array value
-echo $BOTTLES " :" "${a[$BOTTLES]}"
+echo "use key to reference array value"
+echo "a[$BOTTLES]  :" "${a[$BOTTLES]}"
 echo $BOTTLES " :" "${a[bottles]}"
