@@ -2,8 +2,9 @@
 
 echo "Current folder $(dirname "$0")"
 
-. ./q_parse_line.bash
 
+# shellcheck source=/dev/null
+source ./q_parse_line.bash
 
 mp4s=()
 declare -i start=-1
