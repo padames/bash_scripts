@@ -7,8 +7,10 @@ echo "Current folder $(dirname "$0")"
 source ./q_parse_line.bash
 
 mp4s=()
-declare -i start=-1
-declare -i end=-1
+fluid=""
+start=""
+end=""
+flow_rate=-1 # ground truth
 source_rel_path=""
 destination_rel_path=""
 
@@ -27,8 +29,10 @@ while IFS= read -r line; do
   echo "the edited video file will be written to the path ${destination_rel_path}"
   echo -e '\n'
   mp4s=()
-  start=-1
-  end=-1
+  fluid=""
+  start=""
+  end=""
+  flow_rate=-1
   source_rel_path=""
   destination_rel_path=""
 done < ./q_input_file.txt

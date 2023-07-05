@@ -7,14 +7,9 @@
 # 5. The last entry of a video file name is followed by two two-digit numbers representing the start time and the end time 
 # 6. The next two entries are text strings contaning the relative paths to the source of the video files and the destinaton path of the edited file
 
-# global scrip variables:
-mp4s=()
-declare -i start=-1
-declare -i end=-1
-source_rel_path=""
-destination_rel_path=""
 
-ROW_1='15.03_0.mp4,15.03_1.mp4,15.04_0.mp4,04,25,"relative/path/to/input/files","relative/path/to/output/files"'
+
+#ROW_1='15.03_0.mp4,15.03_1.mp4,15.04_0.mp4,04,25,"relative/path/to/input/files","relative/path/to/output/files"'
 # 16.56_0.mp4,16.56_1.mp4,16.57_0.mp4,16.57_1.mp4,46,01,"relative/path/to/input/files","relative/path/to/output/files"
 # 00.29_1.mp4,00.30_0.mp4,00.30_1.mp4,00.31_0.mp4,00.31_1.mp4,32,16,"another/relative/path/to/input/files","another/relative/path/to/output/files"
 
@@ -70,6 +65,10 @@ function is_path () {
 
 }
 
+
+
+
+
 # FUNCTION:     parse
 # ARGUMNETS:    $1, [IN]: an array with tokens
 # DESCRIPTION:  It interpretes the tokens cerated form reading a row entry of a given structure
@@ -77,7 +76,11 @@ function is_path () {
 function parse () {
     declare -a tokens=("${!1}")
     for tok in "${tokens[@]}"; do
-        if (( start < 0 )) && [ -z "$source_rel_path" ] && is_mp4 "$tok"
+        if [ -z "$fluid" ] && [ -z "$source_rel_path" ] && (( ${#mp4s[@]} == 0 )) && is_fluid "$tok"
+        then
+            fluid="$tok"
+        fi 
+        if [ -z "$start" ] && [ -z "$source_rel_path" ] && is_mp4 "$tok"
         then
             mp4s+=("$tok")
             continue 
@@ -103,20 +106,3 @@ function parse () {
         fi
     done
 }
-
-
-
-# shellcheck disable=SC2034  # TOKENS is used by reference in tokenize and passed as agument to parse below
-TOKENS=()
-
-# echo "Before call to tokenize function: ${TOKENS[*]}"
-tokenize "$ROW_1" TOKENS
-# echo "After call to tokenize function: ${TOKENS[*]}"
-parse TOKENS[@] 
-
-
-echo "start clipping at ${start} seconds into the file ${mp4s[1]}"
-end_video_pos=$((${#mp4s[@]}-1))
-echo "end clipping at ${end} seconds into the file ${mp4s[${end_video_pos}]}" 
-echo "input files will be sought in the relative path ${source_rel_path}"
-echo "the edited video file will be written to the path ${destination_rel_path}"
