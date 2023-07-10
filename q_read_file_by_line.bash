@@ -3,11 +3,13 @@
 echo "Current folder $(dirname "$0")"
 
 source ./q_parse_line.bash
-source ./videoEditingNoble.bash
+#source ./videoEditingNoble.bash
 
 mp4s=()
-declare -i start=-1
-declare -i end=-1
+fluid=""
+start=""
+end=""
+flow_rate=-1 # ground truth
 source_rel_path=""
 destination_rel_path=""
 
@@ -29,8 +31,10 @@ while IFS= read -r line; do
   edit_video source_rel_path mp4s[1] mp4s[$end_video_pos] start end destination_rel_path
 
   mp4s=()
-  start=-1
-  end=-1
+  fluid=""
+  start=""
+  end=""
+  flow_rate=-1
   source_rel_path=""
   destination_rel_path=""
 done <./q_input_file.txt

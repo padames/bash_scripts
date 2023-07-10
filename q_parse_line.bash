@@ -7,6 +7,12 @@
 # 5. The last entry of a video file name is followed by two two-digit numbers representing the start time and the end time
 # 6. The next two entries are text strings contaning the relative paths to the source of the video files and the destinaton path of the edited file
 
+
+
+#ROW_1='15.03_0.mp4,15.03_1.mp4,15.04_0.mp4,04,25,"relative/path/to/input/files","relative/path/to/output/files"'
+# 16.56_0.mp4,16.56_1.mp4,16.57_0.mp4,16.57_1.mp4,46,01,"relative/path/to/input/files","relative/path/to/output/files"
+# 00.29_1.mp4,00.30_0.mp4,00.30_1.mp4,00.31_0.mp4,00.31_1.mp4,32,16,"another/relative/path/to/input/files","another/relative/path/to/output/files"
+
 # FUNCTION:     tokenize
 # ARGUMENTS:    $1, [IN]: the comma-separated string to tokenize
 #               $2, [OUT]: the array where the tokens will be stored
@@ -57,6 +63,10 @@ function is_path() {
 
 }
 
+
+
+
+
 # FUNCTION:     parse
 # ARGUMNETS:    $1, [IN]: an array with tokens, passed in as array_name[@] to the script
 # DESCRIPTION:  It interpretes the tokens cerated form reading a row entry of a given structure
@@ -64,7 +74,12 @@ function is_path() {
 function parse() {
     declare -a tokens=("${!1}")
     for tok in "${tokens[@]}"; do
-        if ((start < 0)) && [ -z "$source_rel_path" ] && is_mp4 "$tok"; then
+        if [ -z "$fluid" ] && [ -z "$source_rel_path" ] && (( ${#mp4s[@]} == 0 )) && is_fluid "$tok"
+        then
+            fluid="$tok"
+        fi 
+        if [ -z "$start" ] && [ -z "$source_rel_path" ] && is_mp4 "$tok"
+        then
             mp4s+=("$tok")
             continue
         fi
