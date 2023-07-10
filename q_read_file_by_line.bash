@@ -2,8 +2,8 @@
 
 echo "Current folder $(dirname "$0")"
 
-. ./q_parse_line.bash
-
+source ./q_parse_line.bash
+source ./videoEditingNoble.bash
 
 mp4s=()
 declare -i start=-1
@@ -20,16 +20,17 @@ while IFS= read -r line; do
   tokenize "$line" TOKENS
   parse TOKENS[@]
   echo "start clipping at ${start} seconds into the file ${mp4s[1]}"
-  end_video_pos=$((${#mp4s[@]}-1))
-  echo "end clipping at ${end} seconds into the file ${mp4s[${end_video_pos}]}" 
+  end_video_pos=$((${#mp4s[@]} - 1)) # in python end_video_pos=mp4s[len(pm4s) -1]
+  echo "end clipping at ${end} seconds into the file ${mp4s[${end_video_pos}]}"
   echo "input files will be sought in the relative path ${source_rel_path}"
   echo "the edited video file will be written to the path ${destination_rel_path}"
   echo -e '\n'
+
+  edit_video source_rel_path mp4s[1] mp4s[$end_video_pos] start end destination_rel_path
+
   mp4s=()
   start=-1
   end=-1
   source_rel_path=""
   destination_rel_path=""
-done < ./q_input_file.txt
-
-
+done <./q_input_file.txt
