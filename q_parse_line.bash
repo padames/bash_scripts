@@ -68,7 +68,7 @@ function is_path() {
 
 
 # FUNCTION:     parse
-# ARGUMNETS:    $1, [IN]: an array with tokens, passed in as array_name[@] to the script
+# ARGUMNETS:    $1, [IN]: an array with tokens, passed in as array_name[@] to the function
 # DESCRIPTION:  It interpretes the tokens cerated form reading a row entry of a given structure
 #               Two or more mp4 filenames, the start and end time to clip in the first and last video file, the input path for the video files, the output path for the edited file
 function parse() {
